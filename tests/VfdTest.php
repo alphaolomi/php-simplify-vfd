@@ -9,5 +9,3 @@ it('can instantiate the class', function () {
 
     expect($vfd)->toBeInstanceOf(SimplifyVfd::class);
 });
-
-
