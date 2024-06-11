@@ -1,7 +1,7 @@
 # Simplify VFD for PHP
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/alphaolomi/simplify-vfd.svg?style=flat-square)](https://packagist.org/packages/alphaolomi/simplify-vfd)
-[![Tests](https://img.shields.io/github/actions/workflow/status/alphaolomi/simplify-vfd/run-tests.yml?branch=main&label=tests&style=flat-square)](https://github.com/alphaolomi/simplify-vfd/actions/workflows/run-tests.yml)
+[![Tests](https://img.shields.io/github/actions/workflow/status/alphaolomi/php-simplify-vfd/run-tests.yml?branch=main&label=tests&style=flat-square)](https://github.com/alphaolomi/php-simplify-vfd/actions/workflows/run-tests.yml)
 [![Total Downloads](https://img.shields.io/packagist/dt/alphaolomi/simplify-vfd.svg?style=flat-square)](https://packagist.org/packages/alphaolomi/simplify-vfd)
 
 This is where your description should go. Try and limit it to a paragraph or two. Consider adding a small example.
