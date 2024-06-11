@@ -2,6 +2,7 @@
 
 namespace Alphaolomi\SimplifyVfd;
 
-class SimplifyVfd {
+class SimplifyVfd
+{
     // ...
 }
