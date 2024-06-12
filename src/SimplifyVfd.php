@@ -7,21 +7,25 @@ use GuzzleHttp\Exception\RequestException;
 
 class SimplifyVfd
 {
-
     const LIVE_BASE_URI = 'https://simplify.co.tz/partner/v1/';
+
     const STAGE_BASE_URI = 'https://stage.simplify.co.tz/partner/v1/';
 
     private $httpClient;
+
     private $baseUri;
+
     private $token;
+
     private $configs = [];
 
     /**
-     * @param array $configs{
-     *    @var string $baseUri
-     *    @var string $token
-     *    @var string $enviroment
-     * }
+     * @param  array  $configs{
+     *
+     * @var string
+     * @var string
+     * @var string
+     *             }
      */
     public function __construct($configs)
     {
@@ -38,11 +42,12 @@ class SimplifyVfd
     private function request(string $method, string $uri, array $options = [])
     {
         if ($this->token) {
-            $options['headers']['Authorization'] = 'Bearer ' . $this->token;
+            $options['headers']['Authorization'] = 'Bearer '.$this->token;
         }
 
         // try {
         $response = $this->httpClient->request($method, $uri, $options);
+
         return json_decode($response->getBody()->getContents(), true);
         // } catch (RequestException $e) {
         //     if ($e->hasResponse()) {
@@ -57,7 +62,7 @@ class SimplifyVfd
     {
         $base = 'https://stage.simplify.co.tz/partner/v1/auth/';
 
-        $result =  $this->request('POST', $base . '/user/login', ['json' => $data]);
+        $result = $this->request('POST', $base.'/user/login', ['json' => $data]);
 
         $this->token = $result['token'];
 
@@ -68,7 +73,7 @@ class SimplifyVfd
     {
         $base = 'https://stage.simplify.co.tz/partner/v1/auth/';
 
-        return $this->request('POST', $base . '/user/token/refresh', ['json' => $data]);
+        return $this->request('POST', $base.'/user/token/refresh', ['json' => $data]);
     }
 
     // Invoice Methods
@@ -171,38 +176,38 @@ class SimplifyVfd
         // }
 
         $data = [
-            "dateTime" => "2023-06-11",
-            "customer" => [
-                "identificationType" => "TAX_IDENTIFICATION_NUMBER",
-                "identificationNumber" => "123456789",
-                "vatRegistrationNumber" => "400123456",
-                "name" => "John Doe",
-                "mobileNumber" => "0999999999",
-                "email" => "",
+            'dateTime' => '2023-06-11',
+            'customer' => [
+                'identificationType' => 'TAX_IDENTIFICATION_NUMBER',
+                'identificationNumber' => '123456789',
+                'vatRegistrationNumber' => '400123456',
+                'name' => 'John Doe',
+                'mobileNumber' => '0999999999',
+                'email' => '',
             ],
-            "invoiceAmountType" => "INCLUSIVE",
-            "items" => [
+            'invoiceAmountType' => 'INCLUSIVE',
+            'items' => [
                 [
-                    "description" => "Tests",
-                    "quantity" => 1,
-                    "unitAmount" => "100",
-                    "discountRate" => 0,
-                    "taxType" => "STANDARD"
-                ]
+                    'description' => 'Tests',
+                    'quantity' => 1,
+                    'unitAmount' => '100',
+                    'discountRate' => 0,
+                    'taxType' => 'STANDARD',
+                ],
             ],
-            "payments" => [
+            'payments' => [
                 [
-                    "type" => "CASH",
-                    "amount" => "100"
-                ]
+                    'type' => 'CASH',
+                    'amount' => '100',
+                ],
             ],
-            "partnerInvoiceId" => $this->generateGuid()
+            'partnerInvoiceId' => $this->generateGuid(),
         ];
 
         // https://stage.simplify.co.tz/partner/v1/
         $base = 'https://stage.simplify.co.tz/partner/v1/';
 
-        return $this->request('POST', $base . '/invoice/createIssuedInvoice', ['json' => $data]);
+        return $this->request('POST', $base.'/invoice/createIssuedInvoice', ['json' => $data]);
     }
 
     public function createIssuedInvoiceWithSerial(array $data)
@@ -220,14 +225,14 @@ class SimplifyVfd
     {
         return sprintf(
             '%04X%04X-%04X-%04X-%04X-%04X%04X%04X',
-            mt_rand(0, 0xffff),
-            mt_rand(0, 0xffff),
-            mt_rand(0, 0xffff),
-            mt_rand(0, 0x0fff) | 0x4000,
-            mt_rand(0, 0x3fff) | 0x8000,
-            mt_rand(0, 0xffff),
-            mt_rand(0, 0xffff),
-            mt_rand(0, 0xffff)
+            mt_rand(0, 0xFFFF),
+            mt_rand(0, 0xFFFF),
+            mt_rand(0, 0xFFFF),
+            mt_rand(0, 0x0FFF) | 0x4000,
+            mt_rand(0, 0x3FFF) | 0x8000,
+            mt_rand(0, 0xFFFF),
+            mt_rand(0, 0xFFFF),
+            mt_rand(0, 0xFFFF)
         );
     }
 }
