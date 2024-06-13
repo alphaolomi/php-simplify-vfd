@@ -9,17 +9,45 @@ use GuzzleHttp\Exception\RequestException;
 class SimplifyVfd
 {
 
+    const PROD_BASE_URL = 'https://api.simplify.co.tz/partner/v1';
+    const STAGE_BASE_URL = 'https://stage.simplify.co.tz/partner/v1';
+
     private $client;
+    private $config;
     private $token = null;
+    private $baseUrl = null;
 
-
+    /**
+     * SimplifyVfd constructor
+     *
+     * Environment can be either 'live' or 'stage'
+     *
+     * @param array $config{environment: string, username: string, password: string}
+     * @param GuzzleClient $client
+     *
+     * @return void
+     */
     public function __construct($config, $client = null)
     {
+        // $this->config = $config;
+
+        // is environment field is not set, default to stage
+        if (!isset($config['environment'])) {
+            $this->config['environment'] = 'stage';
+        }
 
         $headers = [
             'Content-Type' => 'application/json',
             'Accept' => 'application/json'
         ];
+
+
+        // set base url based on environment
+        if ($this->config['environment'] == 'live') {
+            $this->baseUrl = self::PROD_BASE_URL;
+        } else {
+            $this->baseUrl = self::STAGE_BASE_URL;
+        }
 
         $this->client = $client ?? new GuzzleClient([
             'headers' => $headers,
@@ -37,12 +65,18 @@ class SimplifyVfd
      */
     public function userLogin($data)
     {
+        // check if username and password is set
+        if (!isset($data['username']) || !isset($data['password'])) {
+            throw new \Exception('Username and password are required');
+        }
+
         $body = [
             'username' => $data['username'],
             'password' => $data['password']
         ];
 
-        $uri =  'https://stage.simplify.co.tz/partner/v1/auth/user/login';
+        // $uri =  'https://stage.simplify.co.tz/partner/v1/auth/user/login';
+        $uri =  $this->baseUrl . '/auth/user/login';
 
         $request = new Request('POST', $uri, [], json_encode($body));
 
@@ -57,8 +91,6 @@ class SimplifyVfd
 
         return $responseBody;
     }
-
-
 
 
     /**
@@ -86,7 +118,8 @@ class SimplifyVfd
             'partnerInvoiceId' => $this->generateGuid()
         ];
 
-        $uri =  'https://stage.simplify.co.tz/partner/v1/invoice/createIssuedInvoice';
+        // $uri =  'https://stage.simplify.co.tz/partner/v1/invoice/createIssuedInvoice';
+        $uri =  $this->baseUrl . '/invoice/createIssuedInvoice';
 
         $request = new Request('POST', $uri, [
             'Authorization' => 'Bearer ' . $this->token,
@@ -97,6 +130,27 @@ class SimplifyVfd
         return json_decode($resposne->getBody()->getContents(), true);
     }
 
+
+    /**
+     * Get Invoice By Partner Invoice Id
+     *
+     * @param string $partnerInvoiceId
+     *
+     * @return array
+     */
+    public function getInvoiceByPartnerInvoiceId($partnerInvoiceId)
+    {
+        // $uri =  'https://stage.simplify.co.tz/partner/v1/invoice/getInvoiceByPartnerInvoiceId/' . $partnerInvoiceId;
+        $uri = sprintf('%s/invoice/getInvoiceByPartnerInvoiceId/%s', $this->baseUrl, $partnerInvoiceId);
+
+        $request = new Request('GET', $uri, [
+            'Authorization' => 'Bearer ' . $this->token,
+        ]);
+
+        $resposne  = $this->client->sendAsync($request)->wait();
+
+        return json_decode($resposne->getBody()->getContents(), true);
+    }
 
     /**
      * Generate GUID
@@ -118,25 +172,5 @@ class SimplifyVfd
             mt_rand(0, 0xffff),
             mt_rand(0, 0xffff)
         );
-    }
-
-    /**
-     * Get Invoice By Partner Invoice Id
-     *
-     * @param string $partnerInvoiceId
-     *
-     * @return array
-     */
-    public function getInvoiceByPartnerInvoiceId($partnerInvoiceId)
-    {
-        $uri =  'https://stage.simplify.co.tz/partner/v1/invoice/getInvoiceByPartnerInvoiceId/' . $partnerInvoiceId;
-
-        $request = new Request('GET', $uri, [
-            'Authorization' => 'Bearer ' . $this->token,
-        ]);
-
-        $resposne  = $this->client->sendAsync($request)->wait();
-
-        return json_decode($resposne->getBody()->getContents(), true);
     }
 }
