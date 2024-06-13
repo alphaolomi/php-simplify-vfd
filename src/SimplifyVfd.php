@@ -13,7 +13,7 @@ class SimplifyVfd
     private $token = null;
 
 
-    public function __construct($config)
+    public function __construct($config, $client = null)
     {
 
         $headers = [
@@ -21,9 +21,9 @@ class SimplifyVfd
             'Accept' => 'application/json'
         ];
 
-        $this->client = new GuzzleClient([
+        $this->client = $client ?? new GuzzleClient([
             'headers' => $headers,
-            'http_errors' => false
+            'http_errors' => false,
         ]);
     }
 
@@ -98,7 +98,14 @@ class SimplifyVfd
     }
 
 
-    public function generateGuid()
+    /**
+     * Generate GUID
+     *
+     * Note: This is a simple implementation of GUID generation
+     *
+     * @return string
+     */
+    private function generateGuid()
     {
         return sprintf(
             '%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
@@ -111,5 +118,25 @@ class SimplifyVfd
             mt_rand(0, 0xffff),
             mt_rand(0, 0xffff)
         );
+    }
+
+    /**
+     * Get Invoice By Partner Invoice Id
+     *
+     * @param string $partnerInvoiceId
+     *
+     * @return array
+     */
+    public function getInvoiceByPartnerInvoiceId($partnerInvoiceId)
+    {
+        $uri =  'https://stage.simplify.co.tz/partner/v1/invoice/getInvoiceByPartnerInvoiceId/' . $partnerInvoiceId;
+
+        $request = new Request('GET', $uri, [
+            'Authorization' => 'Bearer ' . $this->token,
+        ]);
+
+        $resposne  = $this->client->sendAsync($request)->wait();
+
+        return json_decode($resposne->getBody()->getContents(), true);
     }
 }
