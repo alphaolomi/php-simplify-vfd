@@ -2,7 +2,6 @@
 
 use Alphaolomi\SimplifyVfd\SimplifyVfd;
 
-
 it('can login with correct credentials', function () {
 
     $vfd = new SimplifyVfd([
@@ -10,13 +9,12 @@ it('can login with correct credentials', function () {
     ]);
     $credentials = [
         'username' => getenv('VFD_USERNAME'),
-        'password' => getenv('VFD_PASSWORD')
+        'password' => getenv('VFD_PASSWORD'),
     ];
     $loginResult = $vfd->userLogin($credentials);
     expect($loginResult)->toBeArray();
     expect($loginResult)->toHaveKeys(['token', 'refresh_token']);
-})->skip(fn () => !getenv('VFD_USERNAME') || !getenv('VFD_PASSWORD'));
-
+})->skip(fn () => ! getenv('VFD_USERNAME') || ! getenv('VFD_PASSWORD'));
 
 it('can createIssuedInvoice and fetch it', function () {
 
@@ -25,41 +23,40 @@ it('can createIssuedInvoice and fetch it', function () {
     ]);
     $credentials = [
         'username' => getenv('VFD_USERNAME'),
-        'password' => getenv('VFD_PASSWORD')
+        'password' => getenv('VFD_PASSWORD'),
     ];
     $loginResult = $vfd->userLogin($credentials);
 
     // print_r($loginResult);
 
     $body = [
-        "dateTime" => date('Y-m-d'), //"2023-06-11",
-        "customer" => [
-            "identificationType" => "TAX_IDENTIFICATION_NUMBER",
-            "identificationNumber" => "123456789",
-            "vatRegistrationNumber" => "400123456",
-            "name" => "John Doe",
-            "mobileNumber" => "0999999999",
-            "email" => "user@example.com"
+        'dateTime' => date('Y-m-d'), //"2023-06-11",
+        'customer' => [
+            'identificationType' => 'TAX_IDENTIFICATION_NUMBER',
+            'identificationNumber' => '123456789',
+            'vatRegistrationNumber' => '400123456',
+            'name' => 'John Doe',
+            'mobileNumber' => '0999999999',
+            'email' => 'user@example.com',
         ],
-        "invoiceAmountType" => "INCLUSIVE",
-        "items" => [
+        'invoiceAmountType' => 'INCLUSIVE',
+        'items' => [
             [
-                "description" => "Tests",
-                "quantity" => 1,
-                "unitAmount" => "100",
-                "discountRate" => 0,
-                "taxType" => "STANDARD"
-            ]
+                'description' => 'Tests',
+                'quantity' => 1,
+                'unitAmount' => '100',
+                'discountRate' => 0,
+                'taxType' => 'STANDARD',
+            ],
         ],
-        "payments" => [
+        'payments' => [
             [
-                "type" => "CASH",
-                "amount" => "100"
-            ]
+                'type' => 'CASH',
+                'amount' => '100',
+            ],
         ],
         // "partnerInvoiceId" => "{{$guid}}"
     ];
-
 
     $invoiveResult = $vfd->createIssuedInvoice($body);
 
@@ -73,7 +70,6 @@ it('can createIssuedInvoice and fetch it', function () {
     //     [issuedAt] => 2024-06-13 10:16:57
     // )
 
-
     expect($invoiveResult)->toBeArray();
     expect($invoiveResult)->toHaveKeys(['success', 'invoiceId', 'verificationCode', 'verificationUrl', 'issuedAt']);
 
@@ -84,17 +80,15 @@ it('can createIssuedInvoice and fetch it', function () {
     // print_r($invoiveResult);
 
     expect($invoiveResult)->toBeArray();
-})->skip( fn () => !getenv('VFD_USERNAME') || !getenv('VFD_PASSWORD') );
-
-
+})->skip(fn () => ! getenv('VFD_USERNAME') || ! getenv('VFD_PASSWORD'));
 
 it('can\'t login with wrong credentials', function () {
     $vfd = new SimplifyVfd([
         'enviroment' => 'stage',
     ]);
     $loginResult = $vfd->userLogin([
-        'username' => "test@example.com",
-        'password' => "bad-password",
+        'username' => 'test@example.com',
+        'password' => 'bad-password',
     ]);
     expect($loginResult)->toBeArray();
 
