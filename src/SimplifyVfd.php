@@ -10,6 +10,8 @@ class SimplifyVfd
 {
 
     private $client;
+    private $token = null;
+
 
     public function __construct($config)
     {
@@ -20,7 +22,8 @@ class SimplifyVfd
         ];
 
         $this->client = new GuzzleClient([
-            'headers' => $headers
+            'headers' => $headers,
+            'http_errors' => false
         ]);
     }
 
@@ -38,6 +41,13 @@ class SimplifyVfd
 
         $resposne  = $this->client->sendAsync($request)->wait();
 
-        return json_decode($resposne->getBody()->getContents(), true);
+
+        $responseBody = json_decode($resposne->getBody()->getContents(), true);
+
+        if ($resposne->getStatusCode() == 200) {
+            $this->token = $responseBody['data']['token'];
+        }
+
+        return $responseBody;
     }
 }
