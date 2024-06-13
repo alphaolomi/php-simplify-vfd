@@ -28,6 +28,13 @@ class SimplifyVfd
     }
 
 
+    /**
+     * User Login
+     *
+     * @param array $data{username: string, password: string}
+     *
+     * @return array{token: string, refresh_token: string}
+     */
     public function userLogin($data)
     {
         $body = [
@@ -45,9 +52,64 @@ class SimplifyVfd
         $responseBody = json_decode($resposne->getBody()->getContents(), true);
 
         if ($resposne->getStatusCode() == 200) {
-            $this->token = $responseBody['data']['token'];
+            $this->token = $responseBody['token'];
         }
 
         return $responseBody;
+    }
+
+
+
+
+    /**
+     * Create Issued Invoice
+     *
+     * @param array $data
+     *
+     * @return array{success: int, invoiceId: string, verificationCode: string, verificationUrl: string, issuedAt: string}
+     */
+    public function createIssuedInvoice($data)
+    {
+        $body = [
+            'dateTime' => $data['dateTime'],
+            'customer' => [
+                'identificationType' => $data['customer']['identificationType'],
+                'identificationNumber' => $data['customer']['identificationNumber'],
+                'vatRegistrationNumber' => $data['customer']['vatRegistrationNumber'],
+                'name' => $data['customer']['name'],
+                'mobileNumber' => $data['customer']['mobileNumber'],
+                'email' => $data['customer']['email']
+            ],
+            'invoiceAmountType' => $data['invoiceAmountType'],
+            'items' => $data['items'],
+            'payments' => $data['payments'],
+            'partnerInvoiceId' => $this->generateGuid()
+        ];
+
+        $uri =  'https://stage.simplify.co.tz/partner/v1/invoice/createIssuedInvoice';
+
+        $request = new Request('POST', $uri, [
+            'Authorization' => 'Bearer ' . $this->token,
+        ], json_encode($body));
+
+        $resposne  = $this->client->sendAsync($request)->wait();
+
+        return json_decode($resposne->getBody()->getContents(), true);
+    }
+
+
+    public function generateGuid()
+    {
+        return sprintf(
+            '%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
+            mt_rand(0, 0xffff),
+            mt_rand(0, 0xffff),
+            mt_rand(0, 0xffff),
+            mt_rand(0, 0x0fff) | 0x4000,
+            mt_rand(0, 0x3fff) | 0x8000,
+            mt_rand(0, 0xffff),
+            mt_rand(0, 0xffff),
+            mt_rand(0, 0xffff)
+        );
     }
 }
